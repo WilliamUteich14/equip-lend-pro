@@ -24,6 +24,29 @@ export type Equipamento = {
   status: "disponivel" | "alugado" | "atrasado";
 };
 
+export type Cliente = {
+  id: string;
+  lojistaId: string;
+  nome: string;
+  documento: string; // CPF/CNPJ
+  telefone: string;
+  email?: string;
+  endereco?: string;
+  observacoes?: string;
+  criadoEm: string;
+};
+
+export type Funcionario = {
+  id: string;
+  lojistaId: string;
+  nome: string;
+  email: string;
+  cargo: string;
+  telefone?: string;
+  ativo: boolean;
+  criadoEm: string;
+};
+
 export type Locacao = {
   id: string;
   lojistaId: string;
@@ -132,6 +155,20 @@ const locacoes: Locacao[] = [
   { id: "loc8", lojistaId: "l3", equipamentoId: "e8", cliente: "Pavimentos MG", dataSaida: "2025-03-25", dataPrevista: "2025-04-05", dataDevolucao: "2025-04-04", valorDiaria: 220, valorMultaDiaria: 140, valorPrevisto: 2420, valorTotal: 2420, diasAtraso: 0, valorMultaTotal: 0, status: "finalizada" },
   { id: "loc9", lojistaId: "l1", equipamentoId: "e2", cliente: "Reforma Já", dataSaida: "2025-03-15", dataPrevista: "2025-03-22", dataDevolucao: "2025-03-22", valorDiaria: 45, valorMultaDiaria: 30, valorPrevisto: 315, valorTotal: 315, diasAtraso: 0, valorMultaTotal: 0, status: "finalizada" },
   { id: "loc10", lojistaId: "l2", equipamentoId: "e6", cliente: "Marcenaria Silva", dataSaida: "2025-03-10", dataPrevista: "2025-03-17", dataDevolucao: "2025-03-18", valorDiaria: 70, valorMultaDiaria: 45, valorPrevisto: 490, valorTotal: 535, diasAtraso: 1, valorMultaTotal: 45, status: "finalizada" },
+];
+
+const clientes: Cliente[] = [
+  { id: "c1", lojistaId: "l1", nome: "Construtora Boa Obra", documento: "11.222.333/0001-44", telefone: "(11) 99111-2222", email: "contato@boaobra.com.br", endereco: "Av. Paulista, 1000 — São Paulo/SP", criadoEm: "2025-01-12" },
+  { id: "c2", lojistaId: "l1", nome: "Reforma Já", documento: "22.333.444/0001-55", telefone: "(11) 98222-3333", email: "ola@reformaja.com.br", criadoEm: "2025-02-03" },
+  { id: "c3", lojistaId: "l1", nome: "João Carvalho (autônomo)", documento: "123.456.789-00", telefone: "(11) 97333-4444", criadoEm: "2025-03-10" },
+  { id: "c4", lojistaId: "l2", nome: "João Pereira ME", documento: "33.444.555/0001-66", telefone: "(21) 99222-3333", email: "joao@pereira.com", criadoEm: "2024-12-05" },
+  { id: "c5", lojistaId: "l2", nome: "Eventos RJ Produções", documento: "44.555.666/0001-77", telefone: "(21) 98333-4444", criadoEm: "2025-01-20" },
+];
+
+const funcionarios: Funcionario[] = [
+  { id: "f1", lojistaId: "l1", nome: "Carlos Souza", email: "carlos@ferramentassilva.com.br", cargo: "Atendente", telefone: "(11) 96111-2222", ativo: true, criadoEm: "2024-09-01" },
+  { id: "f2", lojistaId: "l1", nome: "Ana Lima", email: "ana@ferramentassilva.com.br", cargo: "Gerente", telefone: "(11) 96222-3333", ativo: true, criadoEm: "2024-10-15" },
+  { id: "f3", lojistaId: "l2", nome: "Roberto Dias", email: "roberto@megaloc.com.br", cargo: "Atendente", ativo: true, criadoEm: "2024-11-02" },
 ];
 
 // Reactive subscribers
@@ -333,5 +370,63 @@ export const mockDb = {
     const diasAtraso = Math.max(0, diffDays(loc.dataPrevista, dataDevolucao));
     const valorMultaTotal = diasAtraso * loc.valorMultaDiaria;
     return { diasAtraso, valorMultaTotal, valorTotal: loc.valorPrevisto + valorMultaTotal };
+  },
+
+  // ---------- Clientes ----------
+  clientesPorLojista: (lojistaId: string) =>
+    clientes.filter((c) => c.lojistaId === lojistaId),
+  getCliente: (id: string) => clientes.find((c) => c.id === id),
+  createCliente: (data: Omit<Cliente, "id" | "criadoEm">) => {
+    const novo: Cliente = {
+      ...data,
+      id: `c${Date.now()}`,
+      criadoEm: new Date().toISOString().slice(0, 10),
+    };
+    clientes.push(novo);
+    notify();
+    return novo;
+  },
+  updateCliente: (id: string, data: Partial<Cliente>) => {
+    const i = clientes.findIndex((c) => c.id === id);
+    if (i >= 0) {
+      clientes[i] = { ...clientes[i], ...data };
+      notify();
+    }
+  },
+  deleteCliente: (id: string) => {
+    const i = clientes.findIndex((c) => c.id === id);
+    if (i >= 0) {
+      clientes.splice(i, 1);
+      notify();
+    }
+  },
+
+  // ---------- Funcionários ----------
+  funcionariosPorLojista: (lojistaId: string) =>
+    funcionarios.filter((f) => f.lojistaId === lojistaId),
+  getFuncionario: (id: string) => funcionarios.find((f) => f.id === id),
+  createFuncionario: (data: Omit<Funcionario, "id" | "criadoEm">) => {
+    const novo: Funcionario = {
+      ...data,
+      id: `f${Date.now()}`,
+      criadoEm: new Date().toISOString().slice(0, 10),
+    };
+    funcionarios.push(novo);
+    notify();
+    return novo;
+  },
+  updateFuncionario: (id: string, data: Partial<Funcionario>) => {
+    const i = funcionarios.findIndex((f) => f.id === id);
+    if (i >= 0) {
+      funcionarios[i] = { ...funcionarios[i], ...data };
+      notify();
+    }
+  },
+  deleteFuncionario: (id: string) => {
+    const i = funcionarios.findIndex((f) => f.id === id);
+    if (i >= 0) {
+      funcionarios.splice(i, 1);
+      notify();
+    }
   },
 };

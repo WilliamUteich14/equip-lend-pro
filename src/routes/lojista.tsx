@@ -9,6 +9,9 @@ import {
   Wrench,
   Menu,
   X,
+  Users,
+  UserCog,
+  TrendingUp,
 } from "lucide-react";
 import { getSession, logout } from "@/lib/mock-auth";
 import { mockDb } from "@/lib/mock-data";
@@ -27,7 +30,11 @@ export const Route = createFileRoute("/lojista")({
 const navItems = [
   { to: "/lojista", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/lojista/equipamentos", label: "Equipamentos", icon: Boxes, exact: false },
+  { to: "/lojista/clientes", label: "Clientes", icon: Users, exact: false },
+  { to: "/lojista/funcionarios", label: "Funcionários", icon: UserCog, exact: false },
   { to: "/lojista/locacoes", label: "Locações", icon: ClipboardList, exact: false },
+  { to: "/lojista/painel", label: "Painel de status", icon: Boxes, exact: false },
+  { to: "/lojista/relatorios", label: "Relatórios", icon: TrendingUp, exact: false },
 ];
 
 function LojistaLayout() {
