@@ -24,6 +24,29 @@ export type Equipamento = {
   status: "disponivel" | "alugado" | "atrasado";
 };
 
+export type Cliente = {
+  id: string;
+  lojistaId: string;
+  nome: string;
+  documento: string; // CPF/CNPJ
+  telefone: string;
+  email?: string;
+  endereco?: string;
+  observacoes?: string;
+  criadoEm: string;
+};
+
+export type Funcionario = {
+  id: string;
+  lojistaId: string;
+  nome: string;
+  email: string;
+  cargo: string;
+  telefone?: string;
+  ativo: boolean;
+  criadoEm: string;
+};
+
 export type Locacao = {
   id: string;
   lojistaId: string;
