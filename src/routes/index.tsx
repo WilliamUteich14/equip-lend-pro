@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Wrench, ShieldCheck, BarChart3, Boxes } from "lucide-react";
-import { login, getSession } from "@/lib/mock-auth";
+import { Wrench, ShieldCheck, BarChart3, Boxes, Store, UserCog } from "lucide-react";
+import { login, getSession, getDemoCredentials, type Role } from "@/lib/mock-auth";
 import loginHero from "@/assets/login-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -30,16 +30,26 @@ export const Route = createFileRoute("/")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("teste@teste.com");
-  const [password, setPassword] = useState("teste123123");
+  const [role, setRole] = useState<Role>("admin");
+  const [email, setEmail] = useState(getDemoCredentials("admin").email);
+  const [password, setPassword] = useState(getDemoCredentials("admin").password);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (getSession()) {
-      navigate({ to: "/admin" });
+    const s = getSession();
+    if (s) {
+      navigate({ to: s.role === "admin" ? "/admin" : "/lojista" });
     }
   }, [navigate]);
+
+  const handleRoleChange = (next: Role) => {
+    setRole(next);
+    const c = getDemoCredentials(next);
+    setEmail(c.email);
+    setPassword(c.password);
+    setError(null);
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -51,7 +61,7 @@ function LoginPage() {
       setLoading(false);
       return;
     }
-    navigate({ to: "/admin" });
+    navigate({ to: session.role === "admin" ? "/admin" : "/lojista" });
   };
 
   return (
@@ -125,7 +135,7 @@ function LoginPage() {
 
       {/* Form side */}
       <section className="flex items-center justify-center p-6 sm:p-12 bg-background">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-6">
           <div className="lg:hidden flex items-center gap-3">
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -139,8 +149,50 @@ function LoginPage() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Acesse sua conta</h2>
             <p className="mt-2 text-muted-foreground">
-              Entre com suas credenciais para acessar o painel administrativo.
+              Escolha o tipo de acesso e entre com suas credenciais.
             </p>
+          </div>
+
+          {/* Role selector */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => handleRoleChange("admin")}
+              className={`group rounded-lg border-2 p-4 text-left transition-all ${
+                role === "admin"
+                  ? "border-primary bg-primary/5 shadow-[var(--shadow-md)]"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <UserCog
+                  className={`h-5 w-5 ${role === "admin" ? "text-primary" : "text-muted-foreground"}`}
+                />
+                <span className="font-semibold">Administrador</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Gerencia lojistas e visão geral da plataforma
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRoleChange("lojista")}
+              className={`group rounded-lg border-2 p-4 text-left transition-all ${
+                role === "lojista"
+                  ? "border-primary bg-primary/5 shadow-[var(--shadow-md)]"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Store
+                  className={`h-5 w-5 ${role === "lojista" ? "text-primary" : "text-muted-foreground"}`}
+                />
+                <span className="font-semibold">Lojista</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Opera equipamentos, locações e devoluções
+              </p>
+            </button>
           </div>
 
           <Card className="p-6 shadow-[var(--shadow-elegant)]">
@@ -182,24 +234,22 @@ function LoginPage() {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? "Entrando..." : "Entrar no painel"}
+                {loading ? "Entrando..." : `Entrar como ${role === "admin" ? "Admin" : "Lojista"}`}
               </Button>
             </form>
 
             <div className="mt-5 rounded-md bg-muted px-3 py-2.5 text-xs text-muted-foreground">
               <p className="font-medium text-foreground">Acesso de demonstração</p>
               <p className="mt-1">
-                <span className="font-mono">teste@teste.com</span> ·{" "}
-                <span className="font-mono">teste123123</span>
+                <span className="font-mono">{getDemoCredentials(role).email}</span>{" "}
+                · <span className="font-mono">{getDemoCredentials(role).password}</span>
               </p>
             </div>
           </Card>
 
-          <p className="text-center text-sm text-muted-foreground">
-            Sistema em ambiente de demonstração.{" "}
-            <Link to="/" className="text-primary hover:underline">
-              Saiba mais
-            </Link>
+          <p className="text-center text-xs text-muted-foreground">
+            Sistema em ambiente de demonstração — autenticação será integrada ao banco de
+            dados quando o backend for ativado.
           </p>
         </div>
       </section>
