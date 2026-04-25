@@ -16,9 +16,10 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: () => {
-    if (typeof window !== "undefined" && !getSession()) {
-      throw redirect({ to: "/" });
-    }
+    if (typeof window === "undefined") return;
+    const s = getSession();
+    if (!s) throw redirect({ to: "/" });
+    if (s.role !== "admin") throw redirect({ to: "/lojista" });
   },
   component: AdminLayout,
 });
