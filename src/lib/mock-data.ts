@@ -1,4 +1,4 @@
-// Mock data store for the admin area.
+// Mock data store for the admin and lojista areas.
 // Persists in-memory across navigation within a session.
 
 export type Lojista = {
@@ -19,6 +19,7 @@ export type Equipamento = {
   nome: string;
   descricao: string;
   valorDiaria: number;
+  /** Valor da multa por dia de atraso */
   valorMulta: number;
   status: "disponivel" | "alugado" | "atrasado";
 };
@@ -28,11 +29,22 @@ export type Locacao = {
   lojistaId: string;
   equipamentoId: string;
   cliente: string;
-  dataSaida: string; // ISO
-  dataPrevista: string; // ISO
-  dataDevolucao?: string; // ISO
+  clienteTelefone?: string;
+  dataSaida: string; // ISO yyyy-mm-dd
+  dataPrevista: string; // ISO yyyy-mm-dd
+  dataDevolucao?: string; // ISO yyyy-mm-dd
+  /** Valor da diária no momento da locação (snapshot) */
   valorDiaria: number;
+  /** Valor da multa diária no momento da locação (snapshot) */
+  valorMultaDiaria: number;
+  /** Valor previsto inicialmente (diárias × valorDiaria) */
+  valorPrevisto: number;
+  /** Valor final cobrado (após devolução, incluindo multas) */
   valorTotal: number;
+  /** Dias de atraso no momento da devolução */
+  diasAtraso?: number;
+  /** Multa total cobrada na devolução */
+  valorMultaTotal?: number;
   status: "ativa" | "finalizada" | "atrasada";
 };
 
@@ -110,16 +122,16 @@ const equipamentos: Equipamento[] = [
 ];
 
 const locacoes: Locacao[] = [
-  { id: "loc1", lojistaId: "l1", equipamentoId: "e1", cliente: "Construtora Boa Obra", dataSaida: "2025-04-18", dataPrevista: "2025-04-25", valorDiaria: 120, valorTotal: 840, status: "ativa" },
-  { id: "loc2", lojistaId: "l2", equipamentoId: "e4", cliente: "João Pereira ME", dataSaida: "2025-04-10", dataPrevista: "2025-04-17", valorDiaria: 95, valorTotal: 665, status: "atrasada" },
-  { id: "loc3", lojistaId: "l2", equipamentoId: "e5", cliente: "Eventos RJ Produções", dataSaida: "2025-04-20", dataPrevista: "2025-04-27", valorDiaria: 280, valorTotal: 1960, status: "ativa" },
-  { id: "loc4", lojistaId: "l3", equipamentoId: "e7", cliente: "Demolidora Central", dataSaida: "2025-04-15", dataPrevista: "2025-04-22", valorDiaria: 150, valorTotal: 1050, status: "ativa" },
-  { id: "loc5", lojistaId: "l5", equipamentoId: "e10", cliente: "Jardim Verde Paisagismo", dataSaida: "2025-04-19", dataPrevista: "2025-04-26", valorDiaria: 85, valorTotal: 595, status: "ativa" },
-  { id: "loc6", lojistaId: "l5", equipamentoId: "e12", cliente: "Pintura Express", dataSaida: "2025-04-08", dataPrevista: "2025-04-15", valorDiaria: 40, valorTotal: 280, status: "atrasada" },
-  { id: "loc7", lojistaId: "l1", equipamentoId: "e3", cliente: "Reforma Já", dataSaida: "2025-04-01", dataPrevista: "2025-04-08", dataDevolucao: "2025-04-08", valorDiaria: 60, valorTotal: 420, status: "finalizada" },
-  { id: "loc8", lojistaId: "l3", equipamentoId: "e8", cliente: "Pavimentos MG", dataSaida: "2025-03-25", dataPrevista: "2025-04-05", dataDevolucao: "2025-04-04", valorDiaria: 220, valorTotal: 2420, status: "finalizada" },
-  { id: "loc9", lojistaId: "l1", equipamentoId: "e2", cliente: "Reforma Já", dataSaida: "2025-03-15", dataPrevista: "2025-03-22", dataDevolucao: "2025-03-22", valorDiaria: 45, valorTotal: 315, status: "finalizada" },
-  { id: "loc10", lojistaId: "l2", equipamentoId: "e6", cliente: "Marcenaria Silva", dataSaida: "2025-03-10", dataPrevista: "2025-03-17", dataDevolucao: "2025-03-18", valorDiaria: 70, valorTotal: 560, status: "finalizada" },
+  { id: "loc1", lojistaId: "l1", equipamentoId: "e1", cliente: "Construtora Boa Obra", clienteTelefone: "(11) 99111-2222", dataSaida: "2025-04-18", dataPrevista: "2025-04-25", valorDiaria: 120, valorMultaDiaria: 80, valorPrevisto: 840, valorTotal: 840, status: "ativa" },
+  { id: "loc2", lojistaId: "l2", equipamentoId: "e4", cliente: "João Pereira ME", clienteTelefone: "(21) 99222-3333", dataSaida: "2025-04-10", dataPrevista: "2025-04-17", valorDiaria: 95, valorMultaDiaria: 60, valorPrevisto: 665, valorTotal: 665, status: "atrasada" },
+  { id: "loc3", lojistaId: "l2", equipamentoId: "e5", cliente: "Eventos RJ Produções", dataSaida: "2025-04-20", dataPrevista: "2025-04-27", valorDiaria: 280, valorMultaDiaria: 180, valorPrevisto: 1960, valorTotal: 1960, status: "ativa" },
+  { id: "loc4", lojistaId: "l3", equipamentoId: "e7", cliente: "Demolidora Central", dataSaida: "2025-04-15", dataPrevista: "2025-04-22", valorDiaria: 150, valorMultaDiaria: 100, valorPrevisto: 1050, valorTotal: 1050, status: "ativa" },
+  { id: "loc5", lojistaId: "l5", equipamentoId: "e10", cliente: "Jardim Verde Paisagismo", dataSaida: "2025-04-19", dataPrevista: "2025-04-26", valorDiaria: 85, valorMultaDiaria: 55, valorPrevisto: 595, valorTotal: 595, status: "ativa" },
+  { id: "loc6", lojistaId: "l5", equipamentoId: "e12", cliente: "Pintura Express", dataSaida: "2025-04-08", dataPrevista: "2025-04-15", valorDiaria: 40, valorMultaDiaria: 25, valorPrevisto: 280, valorTotal: 280, status: "atrasada" },
+  { id: "loc7", lojistaId: "l1", equipamentoId: "e3", cliente: "Reforma Já", dataSaida: "2025-04-01", dataPrevista: "2025-04-08", dataDevolucao: "2025-04-08", valorDiaria: 60, valorMultaDiaria: 40, valorPrevisto: 420, valorTotal: 420, diasAtraso: 0, valorMultaTotal: 0, status: "finalizada" },
+  { id: "loc8", lojistaId: "l3", equipamentoId: "e8", cliente: "Pavimentos MG", dataSaida: "2025-03-25", dataPrevista: "2025-04-05", dataDevolucao: "2025-04-04", valorDiaria: 220, valorMultaDiaria: 140, valorPrevisto: 2420, valorTotal: 2420, diasAtraso: 0, valorMultaTotal: 0, status: "finalizada" },
+  { id: "loc9", lojistaId: "l1", equipamentoId: "e2", cliente: "Reforma Já", dataSaida: "2025-03-15", dataPrevista: "2025-03-22", dataDevolucao: "2025-03-22", valorDiaria: 45, valorMultaDiaria: 30, valorPrevisto: 315, valorTotal: 315, diasAtraso: 0, valorMultaTotal: 0, status: "finalizada" },
+  { id: "loc10", lojistaId: "l2", equipamentoId: "e6", cliente: "Marcenaria Silva", dataSaida: "2025-03-10", dataPrevista: "2025-03-17", dataDevolucao: "2025-03-18", valorDiaria: 70, valorMultaDiaria: 45, valorPrevisto: 490, valorTotal: 535, diasAtraso: 1, valorMultaTotal: 45, status: "finalizada" },
 ];
 
 // Reactive subscribers
@@ -135,9 +147,19 @@ export function subscribe(listener: Listener) {
   return () => listeners.delete(listener);
 }
 
+function diffDays(aIso: string, bIso: string): number {
+  const a = new Date(aIso + "T00:00:00").getTime();
+  const b = new Date(bIso + "T00:00:00").getTime();
+  return Math.round((b - a) / (1000 * 60 * 60 * 24));
+}
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 // API
 export const mockDb = {
-  // Lojistas
+  // ---------- Lojistas ----------
   listLojistas: () => [...lojistas],
   getLojista: (id: string) => lojistas.find((l) => l.id === id),
   createLojista: (data: Omit<Lojista, "id" | "criadoEm">) => {
@@ -165,13 +187,151 @@ export const mockDb = {
     }
   },
 
-  // Equipamentos
+  // ---------- Equipamentos ----------
   listEquipamentos: () => [...equipamentos],
   equipamentosPorLojista: (lojistaId: string) =>
     equipamentos.filter((e) => e.lojistaId === lojistaId),
+  getEquipamento: (id: string) => equipamentos.find((e) => e.id === id),
+  createEquipamento: (data: Omit<Equipamento, "id" | "status">) => {
+    const novo: Equipamento = {
+      ...data,
+      id: `e${Date.now()}`,
+      status: "disponivel",
+    };
+    equipamentos.push(novo);
+    notify();
+    return novo;
+  },
+  updateEquipamento: (id: string, data: Partial<Equipamento>) => {
+    const i = equipamentos.findIndex((e) => e.id === id);
+    if (i >= 0) {
+      equipamentos[i] = { ...equipamentos[i], ...data };
+      notify();
+    }
+  },
+  deleteEquipamento: (id: string) => {
+    const i = equipamentos.findIndex((e) => e.id === id);
+    if (i >= 0) {
+      equipamentos.splice(i, 1);
+      notify();
+    }
+  },
 
-  // Locações
+  // ---------- Locações ----------
   listLocacoes: () => [...locacoes],
   locacoesPorLojista: (lojistaId: string) =>
     locacoes.filter((l) => l.lojistaId === lojistaId),
+  getLocacao: (id: string) => locacoes.find((l) => l.id === id),
+
+  /**
+   * Cria uma locação (saída de equipamento).
+   * Marca o equipamento como "alugado" e calcula valor previsto.
+   */
+  createLocacao: (data: {
+    lojistaId: string;
+    equipamentoId: string;
+    cliente: string;
+    clienteTelefone?: string;
+    dataSaida: string;
+    dataPrevista: string;
+  }): Locacao | { error: string } => {
+    const equip = equipamentos.find((e) => e.id === data.equipamentoId);
+    if (!equip) return { error: "Equipamento não encontrado." };
+    if (equip.lojistaId !== data.lojistaId)
+      return { error: "Equipamento não pertence a este lojista." };
+    if (equip.status !== "disponivel")
+      return { error: "Equipamento não está disponível para locação." };
+
+    const dias = Math.max(1, diffDays(data.dataSaida, data.dataPrevista));
+    const valorPrevisto = dias * equip.valorDiaria;
+
+    const nova: Locacao = {
+      id: `loc${Date.now()}`,
+      lojistaId: data.lojistaId,
+      equipamentoId: data.equipamentoId,
+      cliente: data.cliente,
+      clienteTelefone: data.clienteTelefone,
+      dataSaida: data.dataSaida,
+      dataPrevista: data.dataPrevista,
+      valorDiaria: equip.valorDiaria,
+      valorMultaDiaria: equip.valorMulta,
+      valorPrevisto,
+      valorTotal: valorPrevisto,
+      status: "ativa",
+    };
+    locacoes.push(nova);
+
+    const ei = equipamentos.findIndex((e) => e.id === equip.id);
+    equipamentos[ei] = { ...equipamentos[ei], status: "alugado" };
+
+    notify();
+    return nova;
+  },
+
+  /**
+   * Registra a devolução. Calcula multa por dias de atraso,
+   * libera o equipamento e finaliza a locação.
+   */
+  devolverLocacao: (
+    id: string,
+    dataDevolucao: string = todayIso(),
+  ): Locacao | { error: string } => {
+    const i = locacoes.findIndex((l) => l.id === id);
+    if (i < 0) return { error: "Locação não encontrada." };
+    const loc = locacoes[i];
+    if (loc.status === "finalizada")
+      return { error: "Locação já está finalizada." };
+
+    const diasAtraso = Math.max(0, diffDays(loc.dataPrevista, dataDevolucao));
+    const valorMultaTotal = diasAtraso * loc.valorMultaDiaria;
+    const valorTotal = loc.valorPrevisto + valorMultaTotal;
+
+    const atualizada: Locacao = {
+      ...loc,
+      dataDevolucao,
+      diasAtraso,
+      valorMultaTotal,
+      valorTotal,
+      status: "finalizada",
+    };
+    locacoes[i] = atualizada;
+
+    const ei = equipamentos.findIndex((e) => e.id === loc.equipamentoId);
+    if (ei >= 0) {
+      equipamentos[ei] = { ...equipamentos[ei], status: "disponivel" };
+    }
+
+    notify();
+    return atualizada;
+  },
+
+  /**
+   * Atualiza o status das locações ativas para "atrasada" se
+   * a data prevista já passou. Também sincroniza o status do equipamento.
+   * Idempotente — pode ser chamada a qualquer momento.
+   */
+  syncAtrasos: () => {
+    const hoje = todayIso();
+    let changed = false;
+    locacoes.forEach((loc, i) => {
+      if (loc.status === "ativa" && diffDays(loc.dataPrevista, hoje) > 0) {
+        locacoes[i] = { ...loc, status: "atrasada" };
+        const ei = equipamentos.findIndex((e) => e.id === loc.equipamentoId);
+        if (ei >= 0 && equipamentos[ei].status === "alugado") {
+          equipamentos[ei] = { ...equipamentos[ei], status: "atrasado" };
+        }
+        changed = true;
+      }
+    });
+    if (changed) notify();
+  },
+
+  /** Helpers de cálculo */
+  calcularMultaPrevista: (locacaoId: string, dataDevolucao: string = todayIso()) => {
+    const loc = locacoes.find((l) => l.id === locacaoId);
+    if (!loc) return null;
+    const diasAtraso = Math.max(0, diffDays(loc.dataPrevista, dataDevolucao));
+    const valorMultaTotal = diasAtraso * loc.valorMultaDiaria;
+    return { diasAtraso, valorMultaTotal, valorTotal: loc.valorPrevisto + valorMultaTotal };
+  },
 };

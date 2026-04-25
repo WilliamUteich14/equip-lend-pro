@@ -73,7 +73,7 @@ function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Visão geral</h1>
           <p className="mt-1 text-muted-foreground">
-            Acompanhe a operação consolidada de todos os lojistas em tempo real.
+            Painel de supervisão consolidando todos os lojistas da plataforma.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 shadow-sm">
@@ -82,6 +82,16 @@ function AdminDashboard() {
           <span className="text-sm font-semibold">{formatCurrency(receitaTotal)}</span>
         </div>
       </header>
+
+      <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+        <p className="font-medium text-foreground">Como funciona o painel Admin?</p>
+        <p className="mt-1 text-muted-foreground">
+          Como administrador, você <strong>cadastra os lojistas</strong> (locadoras parceiras) e
+          <strong> supervisiona</strong> a operação consolidada — equipamentos, locações e
+          relatórios. Cada lojista opera o próprio ambiente isolado em <em>/lojista</em>.
+        </p>
+      </div>
+
 
       {/* KPIs */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">

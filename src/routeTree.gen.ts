@@ -9,13 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LojistaRouteImport } from './routes/lojista'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LojistaIndexRouteImport } from './routes/lojista.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as LojistaLocacoesRouteImport } from './routes/lojista.locacoes'
+import { Route as LojistaEquipamentosRouteImport } from './routes/lojista.equipamentos'
 import { Route as AdminRelatoriosRouteImport } from './routes/admin.relatorios'
 import { Route as AdminLojistasRouteImport } from './routes/admin.lojistas'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 
+const LojistaRoute = LojistaRouteImport.update({
+  id: '/lojista',
+  path: '/lojista',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -26,10 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LojistaIndexRoute = LojistaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LojistaRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const LojistaLocacoesRoute = LojistaLocacoesRouteImport.update({
+  id: '/locacoes',
+  path: '/locacoes',
+  getParentRoute: () => LojistaRoute,
+} as any)
+const LojistaEquipamentosRoute = LojistaEquipamentosRouteImport.update({
+  id: '/equipamentos',
+  path: '/equipamentos',
+  getParentRoute: () => LojistaRoute,
 } as any)
 const AdminRelatoriosRoute = AdminRelatoriosRouteImport.update({
   id: '/relatorios',
@@ -50,60 +74,90 @@ const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/lojista': typeof LojistaRouteWithChildren
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/locacoes': typeof LojistaLocacoesRoute
   '/admin/': typeof AdminIndexRoute
+  '/lojista/': typeof LojistaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/locacoes': typeof LojistaLocacoesRoute
   '/admin': typeof AdminIndexRoute
+  '/lojista': typeof LojistaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/lojista': typeof LojistaRouteWithChildren
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/locacoes': typeof LojistaLocacoesRoute
   '/admin/': typeof AdminIndexRoute
+  '/lojista/': typeof LojistaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
+    | '/lojista'
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/equipamentos'
+    | '/lojista/locacoes'
     | '/admin/'
+    | '/lojista/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/equipamentos'
+    | '/lojista/locacoes'
     | '/admin'
+    | '/lojista'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/lojista'
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/equipamentos'
+    | '/lojista/locacoes'
     | '/admin/'
+    | '/lojista/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  LojistaRoute: typeof LojistaRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/lojista': {
+      id: '/lojista'
+      path: '/lojista'
+      fullPath: '/lojista'
+      preLoaderRoute: typeof LojistaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -118,12 +172,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lojista/': {
+      id: '/lojista/'
+      path: '/'
+      fullPath: '/lojista/'
+      preLoaderRoute: typeof LojistaIndexRouteImport
+      parentRoute: typeof LojistaRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/lojista/locacoes': {
+      id: '/lojista/locacoes'
+      path: '/locacoes'
+      fullPath: '/lojista/locacoes'
+      preLoaderRoute: typeof LojistaLocacoesRouteImport
+      parentRoute: typeof LojistaRoute
+    }
+    '/lojista/equipamentos': {
+      id: '/lojista/equipamentos'
+      path: '/equipamentos'
+      fullPath: '/lojista/equipamentos'
+      preLoaderRoute: typeof LojistaEquipamentosRouteImport
+      parentRoute: typeof LojistaRoute
     }
     '/admin/relatorios': {
       id: '/admin/relatorios'
@@ -165,9 +240,25 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface LojistaRouteChildren {
+  LojistaEquipamentosRoute: typeof LojistaEquipamentosRoute
+  LojistaLocacoesRoute: typeof LojistaLocacoesRoute
+  LojistaIndexRoute: typeof LojistaIndexRoute
+}
+
+const LojistaRouteChildren: LojistaRouteChildren = {
+  LojistaEquipamentosRoute: LojistaEquipamentosRoute,
+  LojistaLocacoesRoute: LojistaLocacoesRoute,
+  LojistaIndexRoute: LojistaIndexRoute,
+}
+
+const LojistaRouteWithChildren =
+  LojistaRoute._addFileChildren(LojistaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  LojistaRoute: LojistaRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

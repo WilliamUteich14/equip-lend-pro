@@ -3,35 +3,34 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
-  Store,
   Boxes,
-  TrendingUp,
+  ClipboardList,
   LogOut,
   Wrench,
   Menu,
   X,
 } from "lucide-react";
 import { getSession, logout } from "@/lib/mock-auth";
+import { mockDb } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/lojista")({
   beforeLoad: () => {
     if (typeof window === "undefined") return;
     const s = getSession();
     if (!s) throw redirect({ to: "/" });
-    if (s.role !== "admin") throw redirect({ to: "/lojista" });
+    if (s.role !== "lojista") throw redirect({ to: "/admin" });
   },
-  component: AdminLayout,
+  component: LojistaLayout,
 });
 
 const navItems = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/lojistas", label: "Lojistas", icon: Store, exact: false },
-  { to: "/admin/equipamentos", label: "Equipamentos", icon: Boxes, exact: false },
-  { to: "/admin/relatorios", label: "Relatórios", icon: TrendingUp, exact: false },
+  { to: "/lojista", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/lojista/equipamentos", label: "Equipamentos", icon: Boxes, exact: false },
+  { to: "/lojista/locacoes", label: "Locações", icon: ClipboardList, exact: false },
 ];
 
-function AdminLayout() {
+function LojistaLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [session, setSession] = useState(() => getSession());
@@ -39,6 +38,8 @@ function AdminLayout() {
 
   useEffect(() => {
     setSession(getSession());
+    // Atualiza status de locações atrasadas ao entrar na área do lojista.
+    mockDb.syncAtrasos();
   }, []);
 
   useEffect(() => {
@@ -50,7 +51,9 @@ function AdminLayout() {
     navigate({ to: "/" });
   };
 
-  const initials = (session?.name ?? "A")
+  const lojista = session?.lojistaId ? mockDb.getLojista(session.lojistaId) : null;
+  const displayName = lojista?.nome ?? session?.name ?? "Lojista";
+  const initials = displayName
     .split(" ")
     .map((p) => p[0])
     .join("")
@@ -61,7 +64,7 @@ function AdminLayout() {
     <div className="min-h-screen bg-background">
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 shadow-sm">
-        <Link to="/admin" className="flex items-center gap-2">
+        <Link to="/lojista" className="flex items-center gap-2">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-md"
             style={{ background: "var(--gradient-primary)" }}
@@ -97,7 +100,7 @@ function AdminLayout() {
             </div>
             <div>
               <p className="text-sm font-semibold leading-tight">RentalPro</p>
-              <p className="text-xs text-sidebar-foreground/60">Painel Admin</p>
+              <p className="text-xs text-sidebar-foreground/60">Painel do Lojista</p>
             </div>
           </div>
 
@@ -131,7 +134,7 @@ function AdminLayout() {
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{session?.name ?? "Admin"}</p>
+                <p className="text-sm font-medium truncate">{displayName}</p>
                 <p className="text-xs text-sidebar-foreground/60 truncate">
                   {session?.email ?? ""}
                 </p>
