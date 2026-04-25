@@ -49,7 +49,8 @@ function EquipamentosPage() {
       <header>
         <h1 className="text-3xl font-bold tracking-tight">Equipamentos</h1>
         <p className="mt-1 text-muted-foreground">
-          Visão consolidada de todos os equipamentos cadastrados pelos lojistas.
+          Visão consolidada (somente leitura) de todos os equipamentos cadastrados pelos
+          lojistas. O cadastro e a edição são feitos por cada lojista no próprio painel.
         </p>
       </header>
 
