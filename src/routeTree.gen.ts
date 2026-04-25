@@ -14,8 +14,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LojistaIndexRouteImport } from './routes/lojista.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as LojistaRelatoriosRouteImport } from './routes/lojista.relatorios'
+import { Route as LojistaPainelRouteImport } from './routes/lojista.painel'
 import { Route as LojistaLocacoesRouteImport } from './routes/lojista.locacoes'
+import { Route as LojistaFuncionariosRouteImport } from './routes/lojista.funcionarios'
 import { Route as LojistaEquipamentosRouteImport } from './routes/lojista.equipamentos'
+import { Route as LojistaClientesRouteImport } from './routes/lojista.clientes'
 import { Route as AdminRelatoriosRouteImport } from './routes/admin.relatorios'
 import { Route as AdminLojistasRouteImport } from './routes/admin.lojistas'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
@@ -45,14 +49,34 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const LojistaRelatoriosRoute = LojistaRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => LojistaRoute,
+} as any)
+const LojistaPainelRoute = LojistaPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => LojistaRoute,
+} as any)
 const LojistaLocacoesRoute = LojistaLocacoesRouteImport.update({
   id: '/locacoes',
   path: '/locacoes',
   getParentRoute: () => LojistaRoute,
 } as any)
+const LojistaFuncionariosRoute = LojistaFuncionariosRouteImport.update({
+  id: '/funcionarios',
+  path: '/funcionarios',
+  getParentRoute: () => LojistaRoute,
+} as any)
 const LojistaEquipamentosRoute = LojistaEquipamentosRouteImport.update({
   id: '/equipamentos',
   path: '/equipamentos',
+  getParentRoute: () => LojistaRoute,
+} as any)
+const LojistaClientesRoute = LojistaClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => LojistaRoute,
 } as any)
 const AdminRelatoriosRoute = AdminRelatoriosRouteImport.update({
@@ -78,8 +102,12 @@ export interface FileRoutesByFullPath {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/clientes': typeof LojistaClientesRoute
   '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/funcionarios': typeof LojistaFuncionariosRoute
   '/lojista/locacoes': typeof LojistaLocacoesRoute
+  '/lojista/painel': typeof LojistaPainelRoute
+  '/lojista/relatorios': typeof LojistaRelatoriosRoute
   '/admin/': typeof AdminIndexRoute
   '/lojista/': typeof LojistaIndexRoute
 }
@@ -88,8 +116,12 @@ export interface FileRoutesByTo {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/clientes': typeof LojistaClientesRoute
   '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/funcionarios': typeof LojistaFuncionariosRoute
   '/lojista/locacoes': typeof LojistaLocacoesRoute
+  '/lojista/painel': typeof LojistaPainelRoute
+  '/lojista/relatorios': typeof LojistaRelatoriosRoute
   '/admin': typeof AdminIndexRoute
   '/lojista': typeof LojistaIndexRoute
 }
@@ -101,8 +133,12 @@ export interface FileRoutesById {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/lojistas': typeof AdminLojistasRoute
   '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/lojista/clientes': typeof LojistaClientesRoute
   '/lojista/equipamentos': typeof LojistaEquipamentosRoute
+  '/lojista/funcionarios': typeof LojistaFuncionariosRoute
   '/lojista/locacoes': typeof LojistaLocacoesRoute
+  '/lojista/painel': typeof LojistaPainelRoute
+  '/lojista/relatorios': typeof LojistaRelatoriosRoute
   '/admin/': typeof AdminIndexRoute
   '/lojista/': typeof LojistaIndexRoute
 }
@@ -115,8 +151,12 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/clientes'
     | '/lojista/equipamentos'
+    | '/lojista/funcionarios'
     | '/lojista/locacoes'
+    | '/lojista/painel'
+    | '/lojista/relatorios'
     | '/admin/'
     | '/lojista/'
   fileRoutesByTo: FileRoutesByTo
@@ -125,8 +165,12 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/clientes'
     | '/lojista/equipamentos'
+    | '/lojista/funcionarios'
     | '/lojista/locacoes'
+    | '/lojista/painel'
+    | '/lojista/relatorios'
     | '/admin'
     | '/lojista'
   id:
@@ -137,8 +181,12 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/lojistas'
     | '/admin/relatorios'
+    | '/lojista/clientes'
     | '/lojista/equipamentos'
+    | '/lojista/funcionarios'
     | '/lojista/locacoes'
+    | '/lojista/painel'
+    | '/lojista/relatorios'
     | '/admin/'
     | '/lojista/'
   fileRoutesById: FileRoutesById
@@ -186,6 +234,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/lojista/relatorios': {
+      id: '/lojista/relatorios'
+      path: '/relatorios'
+      fullPath: '/lojista/relatorios'
+      preLoaderRoute: typeof LojistaRelatoriosRouteImport
+      parentRoute: typeof LojistaRoute
+    }
+    '/lojista/painel': {
+      id: '/lojista/painel'
+      path: '/painel'
+      fullPath: '/lojista/painel'
+      preLoaderRoute: typeof LojistaPainelRouteImport
+      parentRoute: typeof LojistaRoute
+    }
     '/lojista/locacoes': {
       id: '/lojista/locacoes'
       path: '/locacoes'
@@ -193,11 +255,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojistaLocacoesRouteImport
       parentRoute: typeof LojistaRoute
     }
+    '/lojista/funcionarios': {
+      id: '/lojista/funcionarios'
+      path: '/funcionarios'
+      fullPath: '/lojista/funcionarios'
+      preLoaderRoute: typeof LojistaFuncionariosRouteImport
+      parentRoute: typeof LojistaRoute
+    }
     '/lojista/equipamentos': {
       id: '/lojista/equipamentos'
       path: '/equipamentos'
       fullPath: '/lojista/equipamentos'
       preLoaderRoute: typeof LojistaEquipamentosRouteImport
+      parentRoute: typeof LojistaRoute
+    }
+    '/lojista/clientes': {
+      id: '/lojista/clientes'
+      path: '/clientes'
+      fullPath: '/lojista/clientes'
+      preLoaderRoute: typeof LojistaClientesRouteImport
       parentRoute: typeof LojistaRoute
     }
     '/admin/relatorios': {
@@ -241,14 +317,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LojistaRouteChildren {
+  LojistaClientesRoute: typeof LojistaClientesRoute
   LojistaEquipamentosRoute: typeof LojistaEquipamentosRoute
+  LojistaFuncionariosRoute: typeof LojistaFuncionariosRoute
   LojistaLocacoesRoute: typeof LojistaLocacoesRoute
+  LojistaPainelRoute: typeof LojistaPainelRoute
+  LojistaRelatoriosRoute: typeof LojistaRelatoriosRoute
   LojistaIndexRoute: typeof LojistaIndexRoute
 }
 
 const LojistaRouteChildren: LojistaRouteChildren = {
+  LojistaClientesRoute: LojistaClientesRoute,
   LojistaEquipamentosRoute: LojistaEquipamentosRoute,
+  LojistaFuncionariosRoute: LojistaFuncionariosRoute,
   LojistaLocacoesRoute: LojistaLocacoesRoute,
+  LojistaPainelRoute: LojistaPainelRoute,
+  LojistaRelatoriosRoute: LojistaRelatoriosRoute,
   LojistaIndexRoute: LojistaIndexRoute,
 }
 

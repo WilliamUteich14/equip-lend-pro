@@ -70,6 +70,7 @@ function LojistaLocacoes() {
 
   const equipamentos = useMockData((db) => db.equipamentosPorLojista(lojistaId));
   const locacoes = useMockData((db) => db.locacoesPorLojista(lojistaId));
+  const clientes = useMockData((db) => db.clientesPorLojista(lojistaId));
 
   const [newOpen, setNewOpen] = useState(false);
   const [form, setForm] = useState<NewForm>(() => ({
@@ -256,6 +257,36 @@ function LojistaLocacoes() {
                 </SelectContent>
               </Select>
             </div>
+
+            {clientes.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="clienteSelect">Cliente cadastrado</Label>
+                <Select
+                  value=""
+                  onValueChange={(id) => {
+                    const c = clientes.find((x) => x.id === id);
+                    if (c) {
+                      setForm({
+                        ...form,
+                        cliente: c.nome,
+                        clienteTelefone: c.telefone,
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger id="clienteSelect">
+                    <SelectValue placeholder="Selecionar cliente cadastrado (opcional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientes.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.nome} — {c.documento}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="cliente">Cliente *</Label>
