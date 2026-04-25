@@ -371,4 +371,62 @@ export const mockDb = {
     const valorMultaTotal = diasAtraso * loc.valorMultaDiaria;
     return { diasAtraso, valorMultaTotal, valorTotal: loc.valorPrevisto + valorMultaTotal };
   },
+
+  // ---------- Clientes ----------
+  clientesPorLojista: (lojistaId: string) =>
+    clientes.filter((c) => c.lojistaId === lojistaId),
+  getCliente: (id: string) => clientes.find((c) => c.id === id),
+  createCliente: (data: Omit<Cliente, "id" | "criadoEm">) => {
+    const novo: Cliente = {
+      ...data,
+      id: `c${Date.now()}`,
+      criadoEm: new Date().toISOString().slice(0, 10),
+    };
+    clientes.push(novo);
+    notify();
+    return novo;
+  },
+  updateCliente: (id: string, data: Partial<Cliente>) => {
+    const i = clientes.findIndex((c) => c.id === id);
+    if (i >= 0) {
+      clientes[i] = { ...clientes[i], ...data };
+      notify();
+    }
+  },
+  deleteCliente: (id: string) => {
+    const i = clientes.findIndex((c) => c.id === id);
+    if (i >= 0) {
+      clientes.splice(i, 1);
+      notify();
+    }
+  },
+
+  // ---------- Funcionários ----------
+  funcionariosPorLojista: (lojistaId: string) =>
+    funcionarios.filter((f) => f.lojistaId === lojistaId),
+  getFuncionario: (id: string) => funcionarios.find((f) => f.id === id),
+  createFuncionario: (data: Omit<Funcionario, "id" | "criadoEm">) => {
+    const novo: Funcionario = {
+      ...data,
+      id: `f${Date.now()}`,
+      criadoEm: new Date().toISOString().slice(0, 10),
+    };
+    funcionarios.push(novo);
+    notify();
+    return novo;
+  },
+  updateFuncionario: (id: string, data: Partial<Funcionario>) => {
+    const i = funcionarios.findIndex((f) => f.id === id);
+    if (i >= 0) {
+      funcionarios[i] = { ...funcionarios[i], ...data };
+      notify();
+    }
+  },
+  deleteFuncionario: (id: string) => {
+    const i = funcionarios.findIndex((f) => f.id === id);
+    if (i >= 0) {
+      funcionarios.splice(i, 1);
+      notify();
+    }
+  },
 };
